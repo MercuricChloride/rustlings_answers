@@ -2,6 +2,7 @@
 // If From is implemented correctly for a type, the Into trait should work conversely.
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.From.html
 // Execute `rustlings hint from_into` or use the `hint` watch subcommand for a hint.
+use std::num::ParseIntError;
 
 #[derive(Debug)]
 struct Person {
@@ -35,10 +36,27 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
-
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        match s.len() {
+            0 => {
+                Person::default()
+            },
+            _ => {
+                let split: Vec<&str> = s.split(",").collect();
+                if split.len() < 2 {return Person::default();}
+                let name: &str = split[0];
+                let age: Result<usize, ParseIntError> = usize::from_str_radix(split[1], 10);
+                if split.len() == 2 && name != "" && age.is_ok() {
+                    Person {
+                        name: String::from(name),
+                        age: age.unwrap()
+                    }
+                } else {
+                    Person::default()
+                }
+            }
+        }
     }
 }
 
